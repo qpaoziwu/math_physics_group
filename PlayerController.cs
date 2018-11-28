@@ -36,23 +36,29 @@ public class PlayerController : MonoBehaviour
         //currentDashTime = maxDashTime;
     }
 
-
         private void Update()
     {
         MoveCharacter();
+        //data for debug
         currentXVelocity = Mathf.Abs(rb.velocity.x);
         currentYVelocity = Mathf.Abs(rb.velocity.y);
+        
         rb.AddRelativeForce(1 * walkVelocity * Time.deltaTime * 10 * Input.GetAxisRaw("Horizontal"), -lowJumpVelocity * Time.deltaTime * 40, 0, ForceMode.Impulse);
     }
+    
     private void FixedUpdate()
     {
+//this is gravity//
         rb.AddRelativeForce(0, -lowJumpVelocity * Time.deltaTime * 60, 0, ForceMode.Impulse);
 
     }
     private void MoveCharacter()
     {
 
+//i tried clamping down the jump vel//
         if (rb.velocity.y > 10) {  Mathf.Clamp(rb.velocity.y ,- 10,10); }
+        
+//jump & double jump//
         if (grounded )
         {
             if (Input.GetButtonDown("Jump"))
@@ -69,7 +75,7 @@ public class PlayerController : MonoBehaviour
             }
 
         }
-
+//dash that doesn't work
         //if (Input.GetButtonDown("Horizontal"))
         //{
         //    currentDashTime = 0.0f;
@@ -86,12 +92,13 @@ public class PlayerController : MonoBehaviour
         //}
         //Controller.move(moveDirection * Time.deltaTime);
     
+    //air movement//
         if (!grounded && rb.velocity.y <= 0)
         {
             rb.AddRelativeForce(Vector3.up * walkVelocity * Time.deltaTime * 60 * Input.GetAxisRaw("Horizontal"), ForceMode.Acceleration);
         }
 
-
+//fall movement//
         if ((!grounded && rb.velocity.y <= 0)|| Input.GetButtonUp("Jump"))
         {
             rb.AddRelativeForce(1 * walkVelocity * Time.deltaTime * 20 * Input.GetAxisRaw("Horizontal"), -lowJumpVelocity * Time.deltaTime * 20, 0, ForceMode.Impulse);
@@ -99,7 +106,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("1");
         }
 
-
+//air movement
         if (!grounded && Input.GetButton("Horizontal"))
         {
 
@@ -111,23 +118,25 @@ public class PlayerController : MonoBehaviour
         }
 
 
-
+//walking & running//
+//acceleration//
         if (grounded&&Input.GetButton("Horizontal"))
         {
             rb.AddRelativeForce(Vector3.right * runVelocity * Time.deltaTime * 40 * Input.GetAxisRaw("Horizontal"), ForceMode.Impulse);
             walking = true;
         }
+//deceleration//
         if (grounded && Input.GetButtonUp("Horizontal"))
         {
             rb.AddRelativeForce(Vector3.right * walkVelocity * Time.deltaTime * 50 * -Input.GetAxisRaw("Horizontal"), ForceMode.Impulse);
         }
-
+//for animation//
         if (currentXVelocity > 2.5|| currentYVelocity > 0.1)
         {
             running = true;
         }
 
-
+//maintaining run speed 
         if (grounded && running)
         {
             if (currentXVelocity<7.5)
@@ -136,17 +145,17 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("Running");
             }
         }
-
+//deceleration & animation//
         if (Input.GetButtonUp("Horizontal"))
         {
             rb.AddRelativeForce(Vector3.right * slowDownVelocity * Time.deltaTime* 10 * -Input.GetAxisRaw("Horizontal"), ForceMode.VelocityChange);
             walking = false;
             running = false;
         }
-
-
     }
-
+    
+/////////////
+//colliders///
     private void OnCollisionStay(Collision collision)
     {
         if (collision == null)
@@ -190,6 +199,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
+////For animation/////
     public FacingDirection GetFacingDirection()
     {
         if (rb.velocity.x < 0) { facingDirection = FacingDirection.Left; }
